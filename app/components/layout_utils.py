@@ -1,6 +1,9 @@
 # components/layout_utils.py
+from datetime import datetime
+
 from dash import html
 from styles.styles import COLORS
+
 
 def create_overlay():
     """Create overlay for mobile sidebar"""
@@ -24,8 +27,8 @@ def create_footer():
     return html.Footer([
         html.Div([
             html.P([
-                "© 2024 Observatoire Économique Intelligent - ",
-                html.A("BMCE Bank", href="#", style={'color': COLORS['primary']}),
+                f"© {datetime.now().year} Observatoire Économique Intelligent - Realisé par ",
+                html.A("Fnine Jasser", href="#", style={'color': COLORS['primary']}),
                 " | Tous droits réservés"
             ], style={
                 'margin': '0',
