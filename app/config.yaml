@@ -1,0 +1,26 @@
+paths:
+  credit_data: "/Users/mac/Sentiment Analysis Press/M3_data/credit_by_sector_Mai_2025.csv"
+  # economic_news: "/Users/mac/Sentiment Analysis Press/economic_news_analysis.csv"
+  economic_news: "/Users/mac/Sentiment Analysis Press/recommended_articles.csv"
+  inflation: "/Users/mac/Sentiment Analysis Press/Inflation.csv"
+  dividends: "/Users/mac/Sentiment Analysis Press/dividendes_casablanca_bourse.csv"
+  stock_sentiment_news: "/Users/mac/Sentiment Analysis Press/articles_analyzes_with_summary.csv"
+  stock_sentiment_kpi: "/Users/mac/Sentiment Analysis Press/sentiment_kpi_by_stock.csv"
+  stocks: "/Users/mac/Sentiment Analysis Press/casablanca_stocks_latest.csv"
+  master_data: "/Users/mac/Sentiment Analysis Press/M3_data/master_summary_Mai_2025.csv"
+  ipc: "/Users/mac/Sentiment Analysis Press/IPC par grandes divisions - mensuel (Base 100 _ 2017).xlsx"
+  favorites: "/Users/mac/Sentiment Analysis Press/app/my_eco_news.csv"
+
+app:
+  title: "EcoNews Dashboard"
+  port: 8050
+  debug: true
+
+api:
+  refresh_interval: 300  # 5 minutes
+  max_articles: 100
+
+theme:
+  primary_color: "#1e3a8a"
+  secondary_color: "#3b82f6"
+  font_family: "Segoe UI, Helvetica Neue, Arial, sans-serif"
