@@ -1,5 +1,5 @@
 # pages/__init__.py
-from . import bourse, eco, home, my_articles, news, zoom
+from . import bourse, eco, home, my_articles, news, zoom, auth
 
 def register_pages(app):
     """Register all pages and their callbacks"""
@@ -12,6 +12,8 @@ def register_pages(app):
     register_stock_callbacks(app)
 
     # Register page-specific callbacks if they exist
+    if hasattr(auth, 'register_callbacks'):
+        auth.register_callbacks(app)
     if hasattr(bourse, 'register_callbacks'):
         bourse.register_callbacks(app)
     if hasattr(eco, 'register_callbacks'):

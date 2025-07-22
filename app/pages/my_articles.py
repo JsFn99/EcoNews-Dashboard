@@ -68,7 +68,7 @@ def create_article_items(df, section_type):
                        'margin': '40px 0'
                    })
         ])]
-    
+
     items = []
     for index, row in df.iterrows():
         sentiment_color = {
@@ -78,13 +78,13 @@ def create_article_items(df, section_type):
             'Baissier': COLORS['danger'],
             'Neutre': COLORS['neutral']
         }.get(row['sentiment'], COLORS['neutral'])
-        
+
         # Create badges based on section type
         if section_type == 'stock':
             first_badge = row.get('stock', row.get('theme', 'N/A'))
         else:
             first_badge = row.get('theme', row.get('source', 'N/A'))
-        
+
         items.append(
             html.Div([
                 # Header with badges and delete button
@@ -120,12 +120,12 @@ def create_article_items(df, section_type):
                             'display': 'inline-block'
                         }) if row.get('source') and section_type == 'stock' else html.Span()
                     ], style={'flex': '1'}),
-                    
+
                     # Delete button
                     html.Button([
                         html.I(className="fas fa-trash-alt", style={'margin-right': '5px'}),
                         "Supprimer"
-                    ], 
+                    ],
                     id={'type': 'delete-btn', 'index': f"{section_type}-{index}"},
                     style={
                         'background': COLORS['danger'],
@@ -146,7 +146,7 @@ def create_article_items(df, section_type):
                     'align-items': 'flex-start',
                     'margin-bottom': '15px'
                 }),
-                
+
                 # Titre
                 html.H4(row['title'], style={
                     'margin': '0 0 12px 0',
@@ -155,7 +155,7 @@ def create_article_items(df, section_type):
                     'line-height': '1.4',
                     'font-weight': '600'
                 }),
-                
+
                 # Résumé
                 html.P(row['mini_resume'], style={
                     'margin': '0 0 12px 0',
@@ -163,7 +163,7 @@ def create_article_items(df, section_type):
                     'color': COLORS['text'],
                     'line-height': '1.6'
                 }),
-                
+
                 # Lien
                 html.A("Lire l'article complet",
                        href=row.get('link', '#'),
@@ -179,10 +179,10 @@ def create_article_items(df, section_type):
                            'display': 'inline-block',
                            'transition': 'all 0.2s'
                        }) if pd.notna(row.get('link')) else html.Span(),
-                
+
                 html.Br() if pd.notna(row.get('link')) else html.Span(),
                 html.Br() if pd.notna(row.get('link')) else html.Span(),
-                
+
                 # Date
                 html.P(f"Publié le {row['published'].strftime('%d/%m/%Y')}", style={
                     'margin': '12px 0 0 0',
@@ -190,13 +190,13 @@ def create_article_items(df, section_type):
                     'color': COLORS['text_light'],
                     'font-style': 'italic'
                 }),
-                
+
                 # Hidden div to store article title and section for deletion
                 html.Div([
                     html.Span(row['title'], id={'type': 'article-title', 'index': f"{section_type}-{index}"}),
                     html.Span(section_type, id={'type': 'article-section', 'index': f"{section_type}-{index}"})
                 ], style={'display': 'none'})
-                
+
             ], style={
                 'background': COLORS['card_bg'],
                 'padding': '24px',
@@ -213,19 +213,19 @@ def create_article_items(df, section_type):
 layout = html.Div([
     # Header
     html.Div([
-        html.H1('Mes Articles', 
+        html.H1('Mes Articles',
                 style={
-                    'textAlign': 'center', 
-                    'color': COLORS['primary'], 
+                    'textAlign': 'center',
+                    'color': COLORS['primary'],
                     'marginBottom': '40px',
                     'fontSize': '2.5rem',
                     'fontWeight': '600'
                 })
     ]),
-    
+
     # Economic News Section
     html.Div([
-        html.H2('Actualités Économiques', 
+        html.H2('Actualités Économiques',
                 style={
                     'color': COLORS['primary'],
                     'marginBottom': '20px',
@@ -238,7 +238,7 @@ layout = html.Div([
             id='eco-articles-container',
             children=[],
             style={
-                'maxHeight': '600px', 
+                'maxHeight': '600px',
                 'overflowY': 'auto',
                 'border': f'1px solid {COLORS["border"]}',
                 'borderRadius': '12px',
@@ -254,10 +254,10 @@ layout = html.Div([
         'border': f'1px solid {COLORS["border"]}',
         'marginBottom': '30px'
     }),
-    
+
     # Stock News Section
     html.Div([
-        html.H2('Actualités Boursières', 
+        html.H2('Actualités Boursières',
                 style={
                     'color': COLORS['primary'],
                     'marginBottom': '20px',
@@ -270,7 +270,7 @@ layout = html.Div([
             id='stock-articles-container',
             children=[],
             style={
-                'maxHeight': '600px', 
+                'maxHeight': '600px',
                 'overflowY': 'auto',
                 'border': f'1px solid {COLORS["border"]}',
                 'borderRadius': '12px',
@@ -285,23 +285,23 @@ layout = html.Div([
         'box-shadow': '0 8px 24px rgba(59, 130, 246, 0.12)',
         'border': f'1px solid {COLORS["border"]}'
     }),
-    
+
     # Store for the article to delete
     dcc.Store(id='article-to-delete', data=None),
-    
+
     # Confirmation dialog
     dcc.ConfirmDialog(
         id='confirm-delete-dialog',
         message='Êtes-vous sûr de vouloir supprimer cet article ?',
     ),
-    
+
     # Interval component for auto-refresh
     dcc.Interval(
         id='interval-component',
         interval=5*1000,  # Update every 5 seconds
         n_intervals=0
     )
-    
+
 ], style={
     'padding': '20px',
     'backgroundColor': COLORS['background'],
@@ -340,7 +340,7 @@ def load_stock_articles(n_intervals):
 def show_confirm_dialog(n_clicks_list, article_titles, article_sections):
     if not any(n_clicks_list):
         return no_update, no_update
-    
+
     # Find which button was clicked
     for i, n_clicks in enumerate(n_clicks_list):
         if n_clicks and n_clicks > 0:
@@ -348,7 +348,7 @@ def show_confirm_dialog(n_clicks_list, article_titles, article_sections):
                 'title': article_titles[i],
                 'section': article_sections[i]
             }
-    
+
     return no_update, no_update
 
 # Callback to handle article deletion
@@ -364,24 +364,24 @@ def delete_article(submit_n_clicks, article_data):
     if submit_n_clicks and article_data:
         article_title = article_data['title']
         section = article_data['section']
-        
+
         # Determine which file to delete from
         if section == 'eco':
             file_path = eco_news_file
         else:
             file_path = stock_news_file
-        
+
         # Delete from CSV
         success = delete_article_from_csv(article_title, file_path)
-        
+
         if success:
             # Reload both sections
             new_eco_df = load_csv_data(eco_news_file)
             new_stock_df = load_csv_data(stock_news_file)
-            
+
             new_eco_items = create_article_items(new_eco_df, 'eco')
             new_stock_items = create_article_items(new_stock_df, 'stock')
-            
+
             return new_eco_items, new_stock_items, None
-        
+
     return no_update, no_update, no_update
