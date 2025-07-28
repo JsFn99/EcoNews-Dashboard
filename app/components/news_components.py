@@ -4,8 +4,10 @@ import pandas as pd
 from dash import html
 from services.stock_service import stock_service
 from config.settings import Config
+from services.favorites_service import FavoritesService
 
 config = Config()
+favorites_service = FavoritesService()
 
 
 def create_news_items_with_favorites(df):
@@ -13,7 +15,7 @@ def create_news_items_with_favorites(df):
     if df is None or df.empty:
         return [
             html.Div([
-                html.P("Aucune actualité disponible pour le moment.",
+                html.P("Aucune actualité trouvée pour les critères sélectionnés.",
                        style={
                            'text-align': 'center',
                            'color': config.COLORS['text_light'],
@@ -32,20 +34,14 @@ def create_news_items_with_favorites(df):
             'Neutre': config.COLORS['neutral']
         }.get(row['sentiment'], config.COLORS['neutral'])
 
-        # Check if this article is favorited (using economic news favorites)
-        from services.favorites_service import FavoritesService
-        favorites_service = FavoritesService()
         favorited = favorites_service.is_favorited(row['title'], row['published'].strftime('%Y-%m-%d %H:%M:%S'))
-
-        # Create unique identifier using title + published date
-        unique_id = f"{row['title']}_{row['published'].strftime('%Y-%m-%d %H:%M:%S').replace('-', '').replace(':', '').replace(' ', '_')}"
+        unique_id = f"{row['title']}_{row['published'].strftime('%Y%m%d_%H%M%S')}"
 
         items.append(
             html.Div([
-                # En-tête avec badges thème et sentiment + bouton favori
                 html.Div([
                     html.Div([
-                        html.Span(row.get('theme', 'Économie'), style={  # Use theme or default
+                        html.Span(row.get('theme', 'Économie'), style={
                             'background': config.COLORS['primary'],
                             'color': 'white',
                             'padding': '8px 16px',
@@ -65,8 +61,6 @@ def create_news_items_with_favorites(df):
                             'display': 'inline-block'
                         })
                     ], style={'display': 'inline-block'}),
-
-                    # Favorite button
                     html.Button(
                         '❤️' if favorited else '🤍',
                         id={'type': 'favorite-btn', 'index': unique_id},
@@ -82,10 +76,7 @@ def create_news_items_with_favorites(df):
                         },
                         title='Ajouter aux favoris' if not favorited else 'Retirer des favoris'
                     )
-                ], style={'margin-bottom': '15px', 'display': 'flex', 'justify-content': 'space-between',
-                          'align-items': 'center'}),
-
-                # Store article data as hidden div
+                ], style={'margin-bottom': '15px', 'display': 'flex', 'justify-content': 'space-between', 'align-items': 'center'}),
                 html.Div(
                     id={'type': 'article-data', 'index': unique_id},
                     children=str({
@@ -93,15 +84,13 @@ def create_news_items_with_favorites(df):
                         'theme': row.get('theme', 'Économie'),
                         'title': row['title'],
                         'summary': row.get('summary', ''),
-                        'mini_resume': row.get('mini_resume', row.get('summary', '')),
+                        'mini_resume': row.get('mini_resume', ''),
                         'sentiment': row['sentiment'],
                         'published': row['published'].strftime('%Y-%m-%d %H:%M:%S'),
                         'link': row.get('link', '')
                     }),
                     style={'display': 'none'}
                 ),
-
-                # Titre de l'article
                 html.H4(row['title'], style={
                     'margin': '0 0 12px 0',
                     'font-size': '18px',
@@ -109,16 +98,12 @@ def create_news_items_with_favorites(df):
                     'line-height': '1.4',
                     'font-weight': '600'
                 }),
-
-                # Résumé de l'article
-                html.P(row.get('mini_resume', row.get('summary', '')), style={
+                html.P(row['mini_resume'], style={
                     'margin': '0 0 12px 0',
                     'font-size': '14px',
                     'color': config.COLORS['text'],
                     'line-height': '1.6'
                 }),
-
-                # Lien vers l'article complet
                 html.A("Lire l'article complet",
                        href=row.get('link', '#'),
                        target="_blank",
@@ -133,11 +118,8 @@ def create_news_items_with_favorites(df):
                            'display': 'inline-block',
                            'transition': 'all 0.2s'
                        }) if pd.notna(row.get('link')) else html.Span(),
-
                 html.Br() if pd.notna(row.get('link')) else html.Span(),
                 html.Br() if pd.notna(row.get('link')) else html.Span(),
-
-                # Date de publication
                 html.P(f" Publié le {row['published'].strftime('%d/%m/%Y')}", style={
                     'margin': '12px 0 0 0',
                     'font-size': '12px',

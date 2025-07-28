@@ -4,7 +4,7 @@ import os
 import pandas as pd
 
 class FavoritesService:
-    def __init__(self, favorites_file='/Users/mac/Sentiment Analysis Press/app/my_eco_news.csv'):
+    def __init__(self, favorites_file='my_eco_news.csv'):
         self.favorites_file = favorites_file
         
     def load_favorites(self):
@@ -12,7 +12,7 @@ class FavoritesService:
         if os.path.exists(self.favorites_file):
             try:
                 return pd.read_csv(self.favorites_file)
-            except:
+            except pd.errors.EmptyDataError:
                 return pd.DataFrame(columns=['source', 'theme', 'title', 'summary', 'mini_resume', 'sentiment', 'published', 'link'])
         else:
             return pd.DataFrame(columns=['source', 'theme', 'title', 'summary', 'mini_resume', 'sentiment', 'published', 'link'])
